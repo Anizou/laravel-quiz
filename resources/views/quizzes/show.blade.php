@@ -38,7 +38,7 @@
             <div class="col-sm-1">
                 @if($correct)
                     <a href="{{ route('answer.wrong', [$quiz->id, $answer->id]) }}" class="btn btn-danger">Wrong</a>
-                @else
+                @elseif($answer)
                     <a href="{{ route('answer.correct', [$quiz->id, $answer->id]) }}" class="btn btn-primary">Correct</a>
                 @endif
             </div>
