@@ -1,14 +1,74 @@
 @extends('layouts/master')
 
 @section('content')
-    <h1>{{ $quiz->name }}</h1>
+    <canvas class="blur" src="/images/yumin1.jpg"></canvas>
+
+    {{--
+    Full Page Background Image Blur
+    http://codepen.io/bbodine1/pen/vcjed/
+    --}}
+    <style>
+    body {
+        background: #fff;
+    }
+    </style>
+
+    <script>
+        CanvasImage = function (e, t) {
+            this.image = t;
+            this.element = e;
+            e.width = t.width;
+            e.height = t.height;
+            this.context = e.getContext("2d");
+            this.context.drawImage(t, 0, 0);
+        };
+
+        CanvasImage.prototype = {
+            blur:function(e) {
+                this.context.globalAlpha = 0.5;
+                for(var t = -e; t <= e; t += 2) {
+                    for(var n = -e; n <= e; n += 2) {
+                        this.context.drawImage(this.element, n, t);
+                        var blob = n >= 0 && t >= 0 && this.context.drawImage(this.element, -(n -1), -(t-1));
+                    }
+                }
+            }
+        };
+
+        $(function() {
+            $(".blur").css({
+                "min-width":"100%",
+                "max-width":"100%",
+                "min-height":"100%",
+                "max-height":"100%",
+                "position":"fixed",
+                "top":"0",
+                "left":"0",
+                "z-index":"-2",
+                "opacity":"0.7"
+            });
+            var image, canvasImage, canvas;
+            $(".blur").each(function() {
+                canvas = this;
+                image = new Image();
+                image.onload = function() {
+                    canvasImage = new CanvasImage(canvas, this);
+                    canvasImage.blur(8);
+                };
+                image.src = $(canvas).attr("src");
+            });
+        });
+
+    </script>
+
+    <h1 class="title">{{ $quiz->name }}</h1>
 
     @if($quiz->scored)
         <h2>전체 문항수 : <span class="label label-success">{{ $quiz->question_count }}</span></h2>
         <h2>정답 문항수 : <span class="label label-success">{{ $quiz->correct_count }}</span></h2>
         <h2><span class="label label-success">{{  (int)($quiz->correct_count * 100 / $quiz->question_count) }} 점</span></h2>
     @else
-    <h3>다음 단어의 뜻을 입력하세요</h3>
+    <h2 class="subtitle text-center" style="margin:40px;">다음 단어의 뜻을 입력하세요</h2>
     @endif
 
     <form method="POST" action="{{ route('play.store') }}" class="form-horizontal">
@@ -24,10 +84,10 @@
             @foreach($quiz->questions as $question)
             <div class="form-group">
                 <label class="control-label col-sm-1">{{ ($count++) }}</label>
-                <label class="control-label col-sm-3 markdown" style="text-align:left;" for="answer_{{ $question->id }}">{{ $question->question }}</label>
-                <div class="col-sm-1">
+                <label class="control-label col-sm-3 markdown question" style="text-align:left;" for="answer_{{ $question->id }}">{{ $question->question }}</label>
+                <div class="col-sm-1 audio">
                     @if(!str_contains($question->question, ' '))
-                        <a href="http://www.dictionary.com/browse/{{ $question->question }}" data-remote="false" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-headphones"></i></a>
+                        <a href="http://www.dictionary.com/browse/{{ $question->question }}" data-remote="false" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-headphones text-danger"></i></a>
                     @endif
                 </div>
                 <div class="col-sm-7">
@@ -39,7 +99,7 @@
 
             <div class="form-group">
                 <div class="col-sm-offset-4 col-sm-8">
-                    <button type="submit" class="btn btn-success">정답 등록하기</button>
+                    <button type="submit" class="btn btn-success btn-lg">정답 등록하기</button>
                 </div>
             </div>
         @else
@@ -55,10 +115,10 @@
                     @endunless
                     ">
                     <label class="control-label col-sm-1">{{ ($count++) }}</label>
-                    <label class="control-label col-sm-3 markdown" style="text-align:left;" for="answer_{{ $question->id }}">{{ $question->question }}</label>
-                    <div class="col-sm-1">
+                    <label class="control-label col-sm-3 markdown question" style="text-align:left;" for="answer_{{ $question->id }}">{{ $question->question }}</label>
+                    <div class="col-sm-1 audio">
                         @if(!str_contains($question->question, ' '))
-                        <a href="http://www.dictionary.com/browse/{{ $question->question }}" data-remote="false" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-headphones"></i></a>
+                        <a href="http://www.dictionary.com/browse/{{ $question->question }}" data-remote="false" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-headphones text-success"></i></a>
                         @endif
                     </div>
                     <div class="col-sm-5">
@@ -92,6 +152,21 @@
     </div><!-- /.modal -->
 
     <style>
+        .title, .subtitle {
+            color: black;
+            -webkit-text-fill-color: white; /* Will override color (regardless of order) */
+            -webkit-text-stroke-width: 1px;
+            -webkit-text-stroke-color: black;
+        }
+
+        .audio {
+            font-size:35px;
+        }
+
+        .form-group {
+            font-size:20px;
+        }
+
         .modal-dialog,
         .modal-content {
             /* 80% of window height */
