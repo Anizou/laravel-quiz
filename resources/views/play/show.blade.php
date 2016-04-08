@@ -25,8 +25,13 @@
             <div class="form-group">
                 <label class="control-label col-sm-1">{{ ($count++) }}</label>
                 <label class="control-label col-sm-3 markdown" style="text-align:left;" for="answer_{{ $question->id }}">{{ $question->question }}</label>
-                <div class="col-sm-8">
-                    <input type="ext" class="form-control" name="answer_{{ $question->id }}" id="answer_{{ $question->id }}"
+                <div class="col-sm-1">
+                    @if(!str_contains($question->question, ' '))
+                        <a href="http://www.dictionary.com/browse/{{ $question->question }}" data-remote="false" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-headphones"></i></a>
+                    @endif
+                </div>
+                <div class="col-sm-7">
+                    <input type="ext" class="form-control answer" name="answer_{{ $question->id }}" id="answer_{{ $question->id }}" readonly="true"
                            value="{{ isset($answers[$question->id]) ? $answers[$question->id]->answer : '' }}" placeholder="뜻 입력">
                 </div>
             </div>
@@ -51,9 +56,14 @@
                     ">
                     <label class="control-label col-sm-1">{{ ($count++) }}</label>
                     <label class="control-label col-sm-3 markdown" style="text-align:left;" for="answer_{{ $question->id }}">{{ $question->question }}</label>
-                    <div class="col-sm-6">
-                        <input type="ext" class="form-control" name="answer_{{ $question->id }}" id="answer_{{ $question->id }}"
-                                value="{{ $answer ? $answer->answer : '' }}" placeholder="뜻 입력">
+                    <div class="col-sm-1">
+                        @if(!str_contains($question->question, ' '))
+                        <a href="http://www.dictionary.com/browse/{{ $question->question }}" data-remote="false" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-headphones"></i></a>
+                        @endif
+                    </div>
+                    <div class="col-sm-5">
+                        <input type="ext" class="form-control answer" name="answer_{{ $question->id }}" id="answer_{{ $question->id }}"
+                                readonly="true" value="{{ $answer ? $answer->answer : '' }}" placeholder="뜻 입력" autocomplete="off">
                         @unless($correct)
                             <i class="form-control-feedback glyphicon glyphicon-remove"></i>
                             <div class="help-block with-errors">{{ $question->answer }}</div>
@@ -63,5 +73,47 @@
             @endforeach
         @endif
     </form>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">발음 듣기</h4>
+                </div>
+                <div class="modal-body">
+                    <iframe src="" width="99.6%" height="800" frameborder="0"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <style>
+        .modal-dialog,
+        .modal-content {
+            /* 80% of window height */
+            height: 90%;
+        }
+
+        .modal-body {
+            /* 100% = dialog height, 120px = header + footer */
+            max-height: calc(100% - 120px);
+            overflow-y: scroll;
+        }
+    </style>
+    <script>
+        // http://stackoverflow.com/questions/19663555/bootstrap-3-how-to-load-content-in-modal-body-via-ajax
+        // Fill modal with content from link href
+        $("#myModal").on("show.bs.modal", function(e) {
+            var $link = $(e.relatedTarget);
+            $(this).find("iframe").attr("src", $link.attr("href"));
+            @unless($quiz->scored)
+                $link.parents('.form-group').find('.answer').attr('readonly', false);
+            @endunless
+        });
+    </script>
 @stop
 
