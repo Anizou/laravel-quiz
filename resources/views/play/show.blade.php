@@ -91,7 +91,10 @@
                     @endif
                 </div>
                 <div class="col-sm-7">
-                    <input type="ext" class="form-control answer" name="answer_{{ $question->id }}" id="answer_{{ $question->id }}" readonly="true"
+                    <input type="ext" class="form-control answer" name="answer_{{ $question->id }}" id="answer_{{ $question->id }}"
+                           @if(!str_contains($question->question, ' '))
+                           readonly="true"
+                           @endif
                            value="{{ isset($answers[$question->id]) ? $answers[$question->id]->answer : '' }}" placeholder="뜻 입력">
                 </div>
             </div>
