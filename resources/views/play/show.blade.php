@@ -80,70 +80,55 @@
         $answers = $answers->keyBy('question_id');
         ?>
 
-        @unless($quiz->scored)
-            @foreach($quiz->questions as $question)
-            <div class="form-group">
-                <label class="control-label col-sm-1">{{ ($count++) }}</label>
-                <label class="control-label col-sm-3 question" style="text-align:left;" for="answer_{{ $question->id }}">
-                    {{ $question->question }}
-                    @if($question->example)
-                        <span class="markdown">```ex) {{ $question->example }}```</span>
-                    @endif
-                </label>
-                <div class="col-sm-1 audio">
-                    @if(!str_contains($question->question, ' '))
-                        <a href="http://www.dictionary.com/browse/{{ $question->question }}" data-remote="false" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-headphones text-danger"></i></a>
-                    @endif
-                </div>
-                <div class="col-sm-7">
-                    <input type="ext" class="form-control answer" name="answer_{{ $question->id }}" id="answer_{{ $question->id }}"
-                           @if(!str_contains($question->question, ' '))
-                           readonly="true"
-                           @endif
-                           value="{{ isset($answers[$question->id]) ? $answers[$question->id]->answer : '' }}" placeholder="뜻 입력">
-                </div>
-            </div>
-            @endforeach
-
-            <div class="form-group">
-                <div class="col-sm-offset-4 col-sm-8">
-                    <button type="submit" class="btn btn-success btn-lg">정답 등록하기</button>
-                </div>
-            </div>
-        @else
-
-            @foreach($quiz->questions as $question)
+        @foreach($quiz->questions as $question)
             <?php
             $answer = isset($answers[$question->id]) ? $answers[$question->id] : null;
             $correct = $answer && $answer->correct;
             ?>
-                <div class="form-group
-                    @unless($correct)
-                        has-feedback has-error
-                    @endunless
-                    ">
-                    <label class="control-label col-sm-1">{{ ($count++) }}</label>
-                    <label class="control-label col-sm-3 question" style="text-align:left;" for="answer_{{ $question->id }}">
-                        {{ $question->question }}
-                        @if($question->example)
-                            <span class="markdown">```ex) {{ $question->example }}```</span>
-                        @endif
-                    </label>
-                    <div class="col-sm-1 audio">
-                        @if(!str_contains($question->question, ' '))
-                        <a href="http://www.dictionary.com/browse/{{ $question->question }}" data-remote="false" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-headphones text-success"></i></a>
-                        @endif
-                    </div>
-                    <div class="col-sm-5">
-                        <input type="ext" class="form-control answer" name="answer_{{ $question->id }}" id="answer_{{ $question->id }}"
-                                readonly="true" value="{{ $answer ? $answer->answer : '' }}" placeholder="뜻 입력" autocomplete="off">
-                        @unless($correct)
-                            <i class="form-control-feedback glyphicon glyphicon-remove"></i>
-                            <div class="help-block with-errors">{{ $question->answer }}</div>
-                        @endunless
-                    </div>
-                </div>
-            @endforeach
+        <div class="form-group
+            @if($quiz->scored && ! $correct)
+                has-feedback has-error
+            @endunless
+        ">
+            <label class="control-label col-sm-1">{{ ($count++) }}</label>
+            <label class="control-label col-sm-3 question" style="text-align:left;" for="answer_{{ $question->id }}">
+                {{ $question->question }}
+                @if($question->example)
+                    <span class="markdown">```ex) {{ $question->example }}```</span>
+                @endif
+            </label>
+            <div class="col-sm-1 audio">
+                @if(!str_contains($question->question, ' '))
+                    <a href="http://www.dictionary.com/browse/{{ $question->question }}" data-remote="false" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-headphones text-danger"></i></a>
+                @endif
+            </div>
+            <div class="@if($quiz->scored) col-sm-5 @else col-sm-7 @endif">
+                <input type="ext" class="form-control answer" name="answer_{{ $question->id }}" id="answer_{{ $question->id }}"
+                    @if(!str_contains($question->question, ' '))
+                    readonly="true"
+                    @endif
+                    value="{{ $answer ? $answer->answer : '' }}"
+                    @if($question->type == 'choice')
+                    placeholder="선택"
+                    @else
+                    placeholder="뜻 입력"
+                    @endif
+                    autocomplete="off">
+
+                @if($quiz->scored && ! $correct)
+                    <i class="form-control-feedback glyphicon glyphicon-remove"></i>
+                    <div class="help-block with-errors">{{ $question->answer }}</div>
+                @endunless
+            </div>
+        </div>
+        @endforeach
+
+        @unless($quiz->scored)
+        <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-8">
+                <button type="submit" class="btn btn-success btn-lg">정답 등록하기</button>
+            </div>
+        </div>
         @endif
     </form>
 
