@@ -32,6 +32,7 @@ class QuestionsController extends Controller
     {
         $question = Question::create([
             'question' => $request->input('question'),
+            'type' => $request->input('type'),
             'answer' => $request->input('answer')
         ]);
 
@@ -49,6 +50,7 @@ class QuestionsController extends Controller
     {
         Question::find($id)->update([
             'question' => $request->input('question'),
+            'type' => $request->input('type'),
             'answer' => $request->input('answer')
         ]);
 

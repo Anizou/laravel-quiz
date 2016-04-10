@@ -16,6 +16,11 @@
             <input type="text" name="answer" value="{{ old('answer', $question->answer) }}" class="form-control">
         </div>
 
+        <div class="form-group">
+            <label for="type">Type (choice)</label>
+            <input type="text" name="type" value="{{ old('type', $question->type) }}" class="form-control">
+        </div>
+
         <button type="submit" class="btn btn-success pull-right">Edit</button>
     </form>
 @stop
