@@ -84,7 +84,12 @@
             @foreach($quiz->questions as $question)
             <div class="form-group">
                 <label class="control-label col-sm-1">{{ ($count++) }}</label>
-                <label class="control-label col-sm-3 markdown question" style="text-align:left;" for="answer_{{ $question->id }}">{{ $question->question }}</label>
+                <label class="control-label col-sm-3 question" style="text-align:left;" for="answer_{{ $question->id }}">
+                    {{ $question->question }}
+                    @if($question->example)
+                        <span class="markdown">```ex) {{ $question->example }}```</span>
+                    @endif
+                </label>
                 <div class="col-sm-1 audio">
                     @if(!str_contains($question->question, ' '))
                         <a href="http://www.dictionary.com/browse/{{ $question->question }}" data-remote="false" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-headphones text-danger"></i></a>
@@ -118,7 +123,12 @@
                     @endunless
                     ">
                     <label class="control-label col-sm-1">{{ ($count++) }}</label>
-                    <label class="control-label col-sm-3 markdown question" style="text-align:left;" for="answer_{{ $question->id }}">{{ $question->question }}</label>
+                    <label class="control-label col-sm-3 question" style="text-align:left;" for="answer_{{ $question->id }}">
+                        {{ $question->question }}
+                        @if($question->example)
+                            <span class="markdown">```ex) {{ $question->example }}```</span>
+                        @endif
+                    </label>
                     <div class="col-sm-1 audio">
                         @if(!str_contains($question->question, ' '))
                         <a href="http://www.dictionary.com/browse/{{ $question->question }}" data-remote="false" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-headphones text-success"></i></a>

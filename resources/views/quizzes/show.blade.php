@@ -26,7 +26,12 @@
             @endunless
         ">
             <label class="control-label col-sm-1">{{ ($count++) }}</label>
-            <label class="control-label col-sm-3 markdown" style="text-align:left;" for="answer_{{ $question->id }}">{{ $question->question }}</label>
+            <label class="control-label col-sm-3" style="text-align:left;" for="answer_{{ $question->id }}">
+                {{ $question->question }}
+                @if($question->example)
+                    <span class="markdown">```ex) {{ $question->example }}```</span>
+                @endif
+            </label>
             <div class="col-sm-7">
                 <input type="ext" class="form-control" name="answer_{{ $question->id }}" id="answer_{{ $question->id }}"
                        value="{{ $answer ? $answer->answer : '' }}" placeholder="뜻 입력">
